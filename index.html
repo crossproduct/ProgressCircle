@@ -74,16 +74,75 @@
 		    };
 
 		    window.onload = function() {
-		    	(window.progressCircle1 = new ProgressCircle()).init(document.getElementById('progress1'),6000, 90, '#FF1133', 120, '#333333', true, 1, 'x', true);
+		    	(window.progressCircle1 = new ProgressCircle()).init({
+		    		circle: document.getElementById('progress1'),
+		    		duration: 6000,
+		    		startAngle: 90,
+		    		stroke: '#FF1133',
+		    		strokeWidth: 120,
+		    		fill: '#333333',
+		    		useLabel: true,
+		    		stopValue: 1,
+		    		unit: 'x',
+		    		scaleFont: true,
+		    		callback: null
+		    	});
 
-		    	(window.progressCircle2 = new ProgressCircle()).init(document.getElementById('progress2'),4500, 70, '#87BB0F', 50, '#FF89A3', true, 0.65, '%', true);
+		    	(window.progressCircle2 = new ProgressCircle()).init({
+		    		circle: document.getElementById('progress2'),
+		    		duration: 4500,
+		    		startAngle: 70,
+		    		stroke: '#87BB0F',
+		    		strokeWidth: 50,
+		    		fill: '#FF89A3',
+		    		useLabel: true,
+		    		stopValue: 0.65,
+		    		unit: '%',
+		    		scaleFont: true,
+		    		callback: null
+		    	});
 
-		    	(window.progressCircle3 = new ProgressCircle()).init(document.getElementById('progress3'),3000, 90, '#51D1E2', 12, '#FF89A3', true, 1, '&cent;', true);
+		    	(window.progressCircle3 = new ProgressCircle()).init({
+		    		circle: document.getElementById('progress3'),
+		    		duration: 3000,
+		    		startAngle: 90,
+		    		stroke: '#51D1E2',
+		    		strokeWidth: 12,
+		    		fill: '#FF89A3',
+		    		useLabel: true,
+		    		stopValue: 1,
+		    		unit: '&cent;',
+		    		scaleFont: true,
+		    		callback: null
+		    	});
 
-		    	(window.progressCircle4 = new ProgressCircle()).init(document.getElementById('progress4'),7000, 70, '#F7FB0F', 2, 'none', true, 1, '', true);
+		    	(window.progressCircle4 = new ProgressCircle()).init({
+		    		circle: document.getElementById('progress4'),
+		    		duration: 7000,
+		    		startAngle: 70,
+		    		stroke: '#F7FB0F',
+		    		strokeWidth: 2,
+		    		fill: 'none',
+		    		useLabel: true,
+		    		stopValue: 1,
+		    		unit: '',
+		    		scaleFont: true,
+		    		callback: null
+		    	});
 
-		    	(window.progressCircle5 = new ProgressCircle()).init(document.getElementById('progress5'),1500, 70, '#980B3F', 10, '#FF8003', false, 0.65, '%', true);
-
+		    	(window.progressCircle5 = new ProgressCircle()).init({
+		    		circle: document.getElementById('progress5'),
+		    		duration: 1500,
+		    		startAngle: 70,
+		    		stroke: '#980B3F',
+		    		strokeWidth: 10,
+		    		fill: '#FF8003',
+		    		useLabel: false,
+		    		stopValue: 0.65,
+		    		unit: '%',
+		    		scaleFont: true,
+		    		callback: null
+		    	});
 		    };
 		</script> 
 	</body>
