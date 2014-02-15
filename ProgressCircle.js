@@ -44,6 +44,9 @@ ProgressCircle.prototype.init = function(data) {
     if(!this.data.strokeWidth) this.data.strokeWidth = 1;
     if(!this.data.useLabel) this.data.useLabel = false;
     if(!this.data.scaleFont) this.data.scaleFont = false;
+    if(!this.data.direction) this.data.direction = 1;
+    if(this.data.direction < 0 ) this.data.direction = -1;
+    else this.data.direction = 1;
     
     if(this.data.stopValue != 1) this.data.fill = "none";
 
@@ -125,9 +128,9 @@ ProgressCircle.prototype.start = function() {
 ProgressCircle.prototype.animate = function() {
     var self = this;
     this.requestId = window.requestAnimationFrame(function() {
-        //if( +((self.stepSize*100*self.i)/360).toFixed(2) >= self.data.stopValue*100 ) {
         if( self.i >= self.i_max ) {
             self.render();
+            if(self.data.callback) self.data.callback();
         } else {
             self.render();
             self.animate();
@@ -161,7 +164,7 @@ ProgressCircle.prototype.render = function() {
         else
             d = d + " L "+x + " " + y;
         
-        this.angle += this.stepSize;
+        this.angle += (this.stepSize * this.data.direction);
 
         // if at the end, close the circle and stop the timer
         if( this.i >= this.i_max ) {
@@ -172,7 +175,7 @@ ProgressCircle.prototype.render = function() {
             e = this.data.circle.getAttribute("d");
             d = e+ " L "+x + " " + y;
 
-            this.angle +=this.stepSize;
+            this.angle += (this.stepSize * this.data.direction);
             this.angle %= 360;
             radians= (this.angle/180) * Math.PI;
             x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;

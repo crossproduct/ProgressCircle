@@ -85,6 +85,7 @@
 		    		stopValue: 1,
 		    		unit: 'x',
 		    		scaleFont: true,
+		    		direction: -11,
 		    		callback: null
 		    	});
 
@@ -99,13 +100,14 @@
 		    		stopValue: 0.65,
 		    		unit: '%',
 		    		scaleFont: true,
+		    		direction: 1,
 		    		callback: null
 		    	});
 
 		    	(window.progressCircle3 = new ProgressCircle()).init({
 		    		circle: document.getElementById('progress3'),
 		    		duration: 3000,
-		    		startAngle: 90,
+		    		startAngle: 0,
 		    		stroke: '#51D1E2',
 		    		strokeWidth: 12,
 		    		fill: '#FF89A3',
@@ -113,13 +115,14 @@
 		    		stopValue: 1,
 		    		unit: '&cent;',
 		    		scaleFont: true,
+		    		direction: 1,
 		    		callback: null
 		    	});
 
 		    	(window.progressCircle4 = new ProgressCircle()).init({
 		    		circle: document.getElementById('progress4'),
 		    		duration: 7000,
-		    		startAngle: 70,
+		    		startAngle: 170,
 		    		stroke: '#F7FB0F',
 		    		strokeWidth: 2,
 		    		fill: 'none',
@@ -127,13 +130,14 @@
 		    		stopValue: 1,
 		    		unit: '',
 		    		scaleFont: true,
+		    		direction: 1,
 		    		callback: null
 		    	});
 
 		    	(window.progressCircle5 = new ProgressCircle()).init({
 		    		circle: document.getElementById('progress5'),
 		    		duration: 1500,
-		    		startAngle: 70,
+		    		startAngle: 270,
 		    		stroke: '#980B3F',
 		    		strokeWidth: 10,
 		    		fill: '#FF8003',
@@ -141,6 +145,7 @@
 		    		stopValue: 0.65,
 		    		unit: '%',
 		    		scaleFont: true,
+		    		direction: -1,
 		    		callback: null
 		    	});
 		    };

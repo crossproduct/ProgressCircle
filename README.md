@@ -2,12 +2,12 @@
 ProgressCircle.js is a javascript class for animating circular progress bars via SVG. It makes generating circular progress meters in your HTML easy without relying on any extra frameworks.
 
 ##How it works
-Setup:
+Load the .js ...
 
 ```
 <script src="ProgressCircle.js"></script>
 ```
-Example:
+Build a home for a ```<path>``` element in your own styling.
 
 ```
 <div style="position:relative; width:450px; height:450px; float:left; -webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
@@ -17,7 +17,10 @@ Example:
 	</svg>
 	<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif"></div>
 </div>
+```
+Initialize an instance of ```ProgressCircle``` and call ```start()```
 
+```
 <script>
 	window.onload = function() {
 		(progressCircle1 = new ProgressCircle()).init({
@@ -31,6 +34,7 @@ Example:
 			stopValue: 1,
 			unit: 'x',
 			scaleFont: true,
+			direction: -1,
 			callback: null
 		});
 	
@@ -44,15 +48,15 @@ Initialization of a ProgressCircle takes an object that holds properties about t
 
 name | type | description
 ------------- | ------------- | -------------
-circle  | DOMElement <path> (required) | A pointer to the <path> DOMElement to which the svg data will append on the 'd' attribute.
-duration | integer (optional, default is 1000)| The total time of the animation described in milliseconds
-startAngle | integer (optional, default is 0) | The angle at which to start the animation. You can specify any integer and it will be auto modulused by 360
-stroke | string (optional, default '#EFEFEF') | The color of the progress circle.
-strokeWidth | integer (optional, default 1) | The width of the progress circle.
-fill | (optional, default 'none') | When the stopValue is set to 1, i.e. a full circle, this value will be used to set the fill attribute. Values are a hex color string or 'none'.
-useLabel | boolean (optional, default false) | Whether or not to show the label annotation.
-stopValue | integer (optional, default 1) | A value between [0,1] indicating what percentage from startAngle to stop.
-unit | string (optional, default '') | A string representing a unit value to be appened to the label if used.
-scaleFont | boolean (optional, default true) | If the label is to be displayed, this value allows the font-size to be autoscaled.
-callback | function (optional, default null) | A user specified function to be called upon completion of progress circle.
-
+```circle```  | DOMElement ```<path>``` | A reference to the ```<path>``` DOMElement to which the svg data will append on the 'd' attribute.
+```duration``` | integer (optional, default is 1000)| The total time of the animation described in milliseconds
+```startAngle``` | integer (optional, default is 0) | The angle at which to start the animation. You can specify any integer and it will be auto modulused by 360
+```stroke``` | string (optional, default ```#EFEFEF```) | The color of the progress circle.
+```strokeWidth``` | integer (optional, default 1) | The width of the progress circle.
+```fill``` | (optional, default 'none') | When the stopValue is set to 1, i.e. a full circle, this value will be used to set the fill attribute. Values are a hex color string or 'none'.
+```useLabel``` | boolean (optional, default false) | Whether or not to show the label annotation.
+```stopValue``` | integer (optional, default 1) | A value between ```[0,1]``` indicating what percentage from startAngle to stop.
+```unit``` | string (optional, default '') | A string representing a unit value to be appened to the label if used.
+```scaleFont``` | boolean (optional, default true) | If the label is to be displayed, this value allows the font-size to be autoscaled.
+```direction``` | integer (optional, default 1) | Evaluated as an integer, a negative value indicates counter clockwise, else clockwise
+```callback``` | function (optional, default null) | A user specified function to be called upon completion of progress circle.
