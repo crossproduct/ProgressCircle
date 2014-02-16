@@ -147,7 +147,9 @@ ProgressCircle.prototype.render = function() {
     var now = Date.now();
     var dTime =  now - this.start_time;
     var to_i = +((dTime / this.data.duration) * this.i_max).toFixed(0);
+    if(to_i > this.i_max) to_i = this.i_max;  // normalize within bounds
     this.velocity = to_i - this.i;
+    
     var d;
     d = this.data.circle.getAttribute("d");
     if( this.i >= this.i_max || this.i === 0 && this.velocity === 0 ) {
