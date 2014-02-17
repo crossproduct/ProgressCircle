@@ -63,3 +63,13 @@ name | type | description
 ```scaleFont``` | boolean (optional, default true) | If the label is to be displayed, this value allows the font-size to be autoscaled.
 ```direction``` | integer (optional, default 1) | Evaluated as an integer, a negative value indicates counter clockwise, else clockwise
 ```callback``` | function (optional, default null) | A user specified function to be called upon completion of progress circle.
+
+
+##A Few Functions...
+After you've inited your progress circle, there are a few functions of interest that you can call.
+
+function | parameter | description
+------------- | ------------- | -------------
+start() | *none* | Starts animation.
+set() | integer | Sets the direct value of the progres circle between ```[0,1]```.
+reset() | *none* | Resets the display and instance values of the progress circle.
