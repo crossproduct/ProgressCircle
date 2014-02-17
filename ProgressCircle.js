@@ -33,7 +33,6 @@ function ProgressCircle() {
 /**
  * Initialize the component with the descriptive data
  * @param  {Object} data - The configuration properties for the instance
- * @return {null}
  */
 ProgressCircle.prototype.init = function(data) {
     this.data = data;
@@ -80,12 +79,11 @@ ProgressCircle.prototype.init = function(data) {
     this.velocity = 1;
     this.stopAngle = this.data.startAngle + (this.data.stopValue * 360);
 
-    this.i_max = +((360/this.stepSize)*this.data.stopValue).toFixed(0);//console.log(this.i_max);
+    this.i_max = +((360/this.stepSize)*this.data.stopValue).toFixed(0);
 };
 
 /**
  * Cleans up anything necessary before it destroys the path element
- * @return {null}
  */
 ProgressCircle.prototype.destroy = function() {
     if(!this.data) return;
@@ -93,7 +91,6 @@ ProgressCircle.prototype.destroy = function() {
     this.data = null;};
 /**
  * Resets the instance data that relates to drawing
- * @return {null}
  */
 ProgressCircle.prototype.reset = function() {
     // stop any rAF loops
@@ -112,8 +109,73 @@ ProgressCircle.prototype.reset = function() {
 };
 
 /**
+ * Set the value of the circle without an animation
+ * @param {integer} value [description]
+ */
+ProgressCircle.prototype.set = function(value) {
+    if(value > 1) value = 1;
+    this.reset();
+    if(value <= 0) return;
+    this.angle = 0 + this.data.startAngle;
+    this.i = 0;
+    var to_i = +((360/this.stepSize)*value).toFixed(2);
+   
+    this.velocity = to_i;
+
+    var label = this.data.circle.parentElement.parentElement.children[this.data.circle.parentElement.parentElement.childElementCount-1];
+    var d;
+    d = this.data.circle.getAttribute("d");
+    if( this.i > to_i || (this.i === 0 && this.velocity === 0) ) {
+        this.velocity = 1;
+    }
+    for(var n=0; n <= this.velocity; n++) {
+        this.angle %= 360;
+        var radians= (this.angle/180) * Math.PI;
+        var x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
+        var y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
+        
+        if(this.i === 0 || d == "M0,0")
+            d = "M "+x + " " + y;
+        else
+            d = d + " L "+x + " " + y;
+        
+        this.angle += (this.stepSize * this.data.direction);
+        // if at the end, close the circle and stop the timer
+        if( this.i >= to_i && value === 1 ) {
+
+            this.angle += (this.stepSize * this.data.direction);
+            this.angle %= 360;
+            radians= (this.angle/180) * Math.PI;
+            x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
+            y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
+            d = d+ " L "+x + " " + y;
+            if(this.data.stopValue === 1) d += ' Z';
+      
+            // set the fill
+            this.data.circle.setAttribute('fill', this.data.fill);
+
+            // update the label
+            if(this.data.useLabel === true) {
+                label.innerHTML = (+((this.stepSize*100*this.i)/360).toFixed(0)) + this.data.unit;
+                label.style.width = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
+                label.style.height = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
+            }
+            break;
+        }
+
+        // update the label
+        if(this.data.useLabel === true) {
+            label.innerHTML = (+((this.stepSize*100*this.i)/360).toFixed(0)) + this.data.unit;
+            label.style.width = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
+            label.style.height = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
+        }
+        this.i++;
+    }
+    if(this.velocity > 0) this.data.circle.setAttribute("d", d);
+};
+
+/**
  * Starts the animation loop
- * @return {null}
  */
 ProgressCircle.prototype.start = function() {
     this.reset();
@@ -122,8 +184,7 @@ ProgressCircle.prototype.start = function() {
 };
 
 /**
- * This is the animation callback / entry point for the rAF implmentation  
- * @return {null}
+ * This is the animation callback / entry point for the rAF implmentation
  */
 ProgressCircle.prototype.animate = function() {
     var self = this;
@@ -140,7 +201,6 @@ ProgressCircle.prototype.animate = function() {
 
 /**
  * Calculates the current deltas to add to the path's d attribute and appends them based on the delta of time.
- * @return {null}
  */
 ProgressCircle.prototype.render = function() {
     var label = this.data.circle.parentElement.parentElement.children[this.data.circle.parentElement.parentElement.childElementCount-1];
@@ -155,7 +215,7 @@ ProgressCircle.prototype.render = function() {
     if( this.i >= this.i_max || this.i === 0 && this.velocity === 0 ) {
         this.velocity = 1;
     }
-    for(var n=0; n < this.velocity; n++) {
+    for(var n=0; n <= this.velocity; n++) {
         this.angle %= 360;
         var radians= (this.angle/180) * Math.PI;
         var x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
@@ -170,12 +230,6 @@ ProgressCircle.prototype.render = function() {
 
         // if at the end, close the circle and stop the timer
         if( this.i >= this.i_max ) {
-            this.angle %= 360;
-            radians= (this.angle/180) * Math.PI;
-            x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
-            y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
-            e = this.data.circle.getAttribute("d");
-            d = e+ " L "+x + " " + y;
 
             this.angle += (this.stepSize * this.data.direction);
             this.angle %= 360;
