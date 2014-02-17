@@ -58,7 +58,7 @@ name | type | description
 ```strokeWidth``` | integer (optional, default 1) | The width of the progress circle.
 ```fill``` | (optional, default 'none') | When the stopValue is set to 1, i.e. a full circle, this value will be used to set the fill attribute. Values are a hex color string or 'none'.
 ```useLabel``` | boolean (optional, default false) | Whether or not to show the label annotation.
-```stopValue``` | integer (optional, default 1) | A value between ```[0,1]``` indicating what percentage from startAngle to stop.
+```stopValue``` | float (optional, default 1) | A value between ```[0,1]``` indicating what percentage from startAngle to stop.
 ```unit``` | string (optional, default '') | A string representing a unit value to be appened to the label if used.
 ```scaleFont``` | boolean (optional, default true) | If the label is to be displayed, this value allows the font-size to be autoscaled.
 ```direction``` | integer (optional, default 1) | Evaluated as an integer, a negative value indicates counter clockwise, else clockwise
@@ -71,5 +71,5 @@ After you've inited your progress circle, there are a few functions of interest 
 function | parameter | description
 ------------- | ------------- | -------------
 start() | *none* | Starts animation.
-set() | integer | Sets the direct value of the progres circle between ```[0,1]```.
+set() | float | Sets the direct value of the progres circle between ```[0,1]```.
 reset() | *none* | Resets the display and instance values of the progress circle.
