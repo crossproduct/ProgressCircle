@@ -73,3 +73,7 @@ function | parameter | description
 start() | *none* | Starts animation.
 set() | float | Sets the direct value of the progres circle between ```[0,1]```.
 reset() | *none* | Resets the display and instance values of the progress circle.
+
+
+##License
+MIT
