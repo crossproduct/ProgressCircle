@@ -1,6 +1,10 @@
 #ProgressCircle.js
 ProgressCircle.js is a javascript class for animating circular progress bars via SVG. It makes generating circular progress meters in your HTML easy without relying on any extra frameworks.
 
+Note: This requires support for 'window.requestAnimationFrame()' thus make sure you map the vendor prefixes and / or supply the polyfill in your global space. One of these days we'll stop having to do this, but until then please take note :(
+
+(Luckily it works just fine in Chrome)
+
 ![](c1.jpg)![](c2.jpg)![](c3.jpg)
 
 Check out the [Demo](http://crossproduct.github.io/ProgressCircle/)
@@ -58,8 +62,22 @@ name | type | description
 ```strokeWidth``` | integer (optional, default 1) | The width of the progress circle.
 ```fill``` | (optional, default 'none') | When the stopValue is set to 1, i.e. a full circle, this value will be used to set the fill attribute. Values are a hex color string or 'none'.
 ```useLabel``` | boolean (optional, default false) | Whether or not to show the label annotation.
-```stopValue``` | integer (optional, default 1) | A value between ```[0,1]``` indicating what percentage from startAngle to stop.
+```stopValue``` | float (optional, default 1) | A value between ```[0,1]``` indicating what percentage from startAngle to stop.
 ```unit``` | string (optional, default '') | A string representing a unit value to be appened to the label if used.
 ```scaleFont``` | boolean (optional, default true) | If the label is to be displayed, this value allows the font-size to be autoscaled.
 ```direction``` | integer (optional, default 1) | Evaluated as an integer, a negative value indicates counter clockwise, else clockwise
 ```callback``` | function (optional, default null) | A user specified function to be called upon completion of progress circle.
+
+
+##A Few Functions...
+After you've inited your progress circle, there are a few functions of interest that you can call.
+
+function | parameter | description
+------------- | ------------- | -------------
+start() | *none* | Starts animation.
+set() | float | Sets the direct value of the progres circle between ```[0,1]```.
+reset() | *none* | Resets the display and instance values of the progress circle.
+
+
+##License
+MIT
