@@ -119,7 +119,7 @@ ProgressCircle.prototype.reset = function() {
 
 /**
  * Set the value of the circle without an animation
- * @param {integer} value [description]
+ * @param {integer} value A value between [0,1] indicating what percentage from startAngle to stop.
  */
 ProgressCircle.prototype.set = function(value) {
     if(value > 1) value = 1;
