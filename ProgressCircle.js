@@ -46,6 +46,7 @@ ProgressCircle.prototype.init = function(data) {
     if(!this.data.direction) this.data.direction = 1;
     if(this.data.direction < 0 ) this.data.direction = -1;
     else this.data.direction = 1;
+    if(!this.data.strokeLinecap) this.data.strokeLinecap = "";
     
     if(this.data.stopValue != 1) this.data.fill = "none";
 
@@ -54,6 +55,14 @@ ProgressCircle.prototype.init = function(data) {
     this.data.circle.setAttribute('fill', 'none');
     this.data.circle.setAttribute('stroke', this.data.stroke);
     this.data.circle.setAttribute('stroke-width', this.data.strokeWidth);
+    this.data.circle.setAttribute('stroke-linecap', this.data.strokeLinecap);
+    
+    if(this.data.trackColor) {
+        this.data.circle.parentElement.style.boxShadow = 'inset 0 0 0 '+ this.data.strokeWidth+ 'px '+this.data.trackColor;
+        this.data.circle.parentElement.style.webkitBoxShadow = 'inset 0 0 0 '+ this.data.strokeWidth+ 'px '+this.data.trackColor;
+        this.data.circle.parentElement.style.mozBoxShadow = 'inset 0 0 0 '+ this.data.strokeWidth+ 'px '+this.data.trackColor;
+        this.data.circle.parentElement.style.borderRadius = "50%";
+    }
 
     this.data.startAngle %= 360; // normalize input
     this.data.stopValue = +this.data.stopValue.toFixed(2);
