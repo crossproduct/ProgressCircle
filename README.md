@@ -66,6 +66,8 @@ name | type | description
 ```unit``` | string (optional, default '') | A string representing a unit value to be appened to the label if used.
 ```scaleFont``` | boolean (optional, default true) | If the label is to be displayed, this value allows the font-size to be autoscaled.
 ```direction``` | integer (optional, default 1) | Evaluated as an integer, a negative value indicates counter clockwise, else clockwise
+```trackColor``` | string (optional) | The color, and thus presence, of a track underneath the progress.
+```strokeLinecap``` | string (optional) | A valid stroke-linecap value for the head and tail of the progress circle.
 ```callback``` | function (optional, default null) | A user specified function to be called upon completion of progress circle.
 
 
