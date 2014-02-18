@@ -1,6 +1,10 @@
 #ProgressCircle.js
 ProgressCircle.js is a javascript class for animating circular progress bars via SVG. It makes generating circular progress meters in your HTML easy without relying on any extra frameworks.
 
+Note: This requires support for 'window.requestAnimationFrame()' thus make sure you map the vendor prefixes and / or supply the polyfill in your global space. One of these days we'll stop having to do this, but until then please take note :(
+
+(Luckily it works just fine in Chrome)
+
 ![](c1.jpg)![](c2.jpg)![](c3.jpg)
 
 Check out the [Demo](http://crossproduct.github.io/ProgressCircle/)
