@@ -17,7 +17,7 @@ Load the .js ...
 Build a home for a ```<path>``` element in your own styling.
 
 ```
-<div style="position:relative; width:450px; height:450px; float:left; -webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
+<div style="position:relative; width:450px; height:450px; float:left;">
 	<svg	id="progress-canvas1" xmlns="http://www.w3.org/2000/svg"
 			xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
 	    <path id="progress1" d="M0,0" fill="none"></path>
