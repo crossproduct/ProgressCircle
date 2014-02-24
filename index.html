@@ -14,7 +14,7 @@
 			    <path id="progress1" d="M0,0" fill="none"></path>
 
 			</svg>
-			<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif"></div>
+			<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif; pointer-events:none"></div>
 		</div>
 
 		<!-- progress circle 2 -->
@@ -25,7 +25,7 @@
 			    <path id="progress2" d="M0,0" fill="none"></path>
 
 			</svg>
-			<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif"></div>
+			<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif; pointer-events:none"></div>
 		</div>
 
 		<!-- progress circle 3 -->
@@ -36,7 +36,7 @@
 			    <path id="progress3" d="M0,0" fill="none"></path>
 
 			</svg>
-			<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif"></div>
+			<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif; pointer-events:none"></div>
 		</div>
 
 		<!-- progress circle 4 -->
@@ -47,7 +47,7 @@
 			    <path id="progress4" d="M0,0" fill="none"></path>
 
 			</svg>
-			<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif"></div>
+			<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif; pointer-events:none"></div>
 		</div>
 
 		<!-- progress circle 5 -->
@@ -58,20 +58,21 @@
 			    <path id="progress5" d="M0,0" fill="none"></path>
 
 			</svg>
-			<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif"></div>
+			<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif; pointer-events:none"></div>
 		</div>
 
 		<!-- Cirlular Progress JS -->
 		<script src="ProgressCircle.js"></script>
 
 		<script> 
-		    window.onclick = function() {
+		    window.onclick = function(e) {
 		    	window.progressCircle1.start();
 		    	window.progressCircle2.start();
 		    	window.progressCircle3.start();
 		    	window.progressCircle4.start();
 		    	window.progressCircle5.start();
 		    };
+
 
 		    window.onload = function() {
 		    	(window.progressCircle1 = new ProgressCircle()).init({
@@ -161,6 +162,28 @@
 		    	window.progressCircle3.start();
 		    	window.progressCircle4.start();
 		    	window.progressCircle5.start();
+
+
+			    window.progressCircle1.data.circle.addEventListener('click', function(e) {
+				    e.stopImmediatePropagation();
+			    	window.progressCircle1.start();
+			    });
+			    window.progressCircle2.data.circle.addEventListener('click', function(e) {
+				    e.stopImmediatePropagation();
+			    	window.progressCircle2.start();
+			    });
+			    window.progressCircle3.data.circle.addEventListener('click', function(e) {
+				    e.stopImmediatePropagation();
+			    	window.progressCircle3.start();
+			    });
+			    window.progressCircle4.data.circle.addEventListener('click', function(e) {
+				    e.stopImmediatePropagation();
+			    	window.progressCircle4.start();
+			    });
+			    window.progressCircle5.data.circle.addEventListener('click', function(e) {
+				    e.stopImmediatePropagation();
+			    	window.progressCircle5.start();
+			    });
 		    };
 		</script> 
 	</body>
