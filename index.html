@@ -7,7 +7,7 @@
 	<body style="background-color:#666666; margin:0">
 
 		<!-- progress circle 1 -->
-		<div style="position:relative; width:450px; height:450px; float:left; -webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
+		<div style="position:relative; width:450px; height:450px; float:left; /-webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
 			<svg	id="progress-canvas1" xmlns="http://www.w3.org/2000/svg"
 					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"> 
 			  
@@ -18,7 +18,7 @@
 		</div>
 
 		<!-- progress circle 2 -->
-		<div style="position:relative; width:100px; height:100px; float:left; -webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
+		<div style="position:relative; width:100px; height:100px; float:left; /-webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
 			<svg	id="progress-canvas2" xmlns="http://www.w3.org/2000/svg"
 					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"> 
 			  
@@ -29,7 +29,7 @@
 		</div>
 
 		<!-- progress circle 3 -->
-		<div style="position:relative; width:200px; height:200px; float:left; -webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
+		<div style="position:relative; width:200px; height:200px; float:left; /-webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
 			<svg	id="progress-canvas3" xmlns="http://www.w3.org/2000/svg"
 					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"> 
 			  
@@ -40,7 +40,7 @@
 		</div>
 
 		<!-- progress circle 4 -->
-		<div style="position:relative; width:300px; height:300px; float:left; -webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
+		<div style="position:relative; width:300px; height:300px; float:left; /-webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
 			<svg	id="progress-canvas4" xmlns="http://www.w3.org/2000/svg"
 					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"> 
 			  
@@ -51,7 +51,7 @@
 		</div>
 
 		<!-- progress circle 5 -->
-		<div style="position:relative; width:100px; height:100px; float:left; -webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
+		<div style="position:relative; width:100px; height:100px; float:left; /-webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
 			<svg	id="progress-canvas5" xmlns="http://www.w3.org/2000/svg"
 					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"> 
 			  
@@ -86,6 +86,7 @@
 		    		unit: 'x',
 		    		scaleFont: true,
 		    		direction: -11,
+		    		easing: 'easeInOutCubic',
 		    		callback: null
 		    	});
 
@@ -101,6 +102,7 @@
 		    		unit: '%',
 		    		scaleFont: true,
 		    		direction: 1,
+		    		easing: 'easeOutQuint',
 		    		callback: null
 		    	});
 
@@ -122,7 +124,7 @@
 
 		    	(window.progressCircle4 = new ProgressCircle()).init({
 		    		circle: document.getElementById('progress4'),
-		    		duration: 7000,
+		    		duration: 9000,
 		    		startAngle: 170,
 		    		stroke: '#F7FB0F',
 		    		strokeWidth: 2,
@@ -147,6 +149,7 @@
 		    		unit: '%',
 		    		scaleFont: true,
 		    		direction: -1,
+		    		easing: 'easeInOutExpo',
 		    		trackColor: '#444444',
 		    		strokeLinecap: 'round',
 		    		callback: null

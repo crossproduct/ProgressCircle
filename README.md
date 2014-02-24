@@ -68,6 +68,7 @@ name | type | description
 ```direction``` | integer (optional, default 1) | Evaluated as an integer, a negative value indicates counter clockwise, else clockwise
 ```trackColor``` | string (optional) | The color, and thus presence, of a track underneath the progress.
 ```strokeLinecap``` | string (optional) | A valid stroke-linecap value for the head and tail of the progress circle.
+```easing``` | string (optional) | Apply an easing function to the animation. Can be of the following: ```easeInQuad, easeOutQuad, easeInOutQuad, easeInCubic, easeOutCubic, easeInOutCubic, easeInQuart, easeOutQuart, easeInOutQuart, easeInQuint, easeOutQuint, easeInOutQuint, easeInExpo, easeOutExpo, easeInOutExpo```
 ```callback``` | function (optional, default null) | A user specified function to be called upon completion of progress circle.
 
 
@@ -82,4 +83,28 @@ reset() | *none* | Resets the display and instance values of the progress circle
 
 
 ##License
+<<<<<<< HEAD
 MIT
+=======
+The MIT License (MIT)
+
+Copyright (c) 2014 Chris Ross , crossproduct iNc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+>>>>>>> master
