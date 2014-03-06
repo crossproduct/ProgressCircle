@@ -9,8 +9,8 @@
 		<!-- progress circle 1 -->
 		<div style="position:relative; width:450px; height:450px; float:left; /-webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
 			<svg	id="progress-canvas1" xmlns="http://www.w3.org/2000/svg"
-					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"> 
-			  
+					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+
 			    <path id="progress1" d="M0,0" fill="none"></path>
 
 			</svg>
@@ -20,8 +20,8 @@
 		<!-- progress circle 2 -->
 		<div style="position:relative; width:100px; height:100px; float:left; /-webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
 			<svg	id="progress-canvas2" xmlns="http://www.w3.org/2000/svg"
-					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"> 
-			  
+					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+
 			    <path id="progress2" d="M0,0" fill="none"></path>
 
 			</svg>
@@ -31,8 +31,8 @@
 		<!-- progress circle 3 -->
 		<div style="position:relative; width:200px; height:200px; float:left; /-webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
 			<svg	id="progress-canvas3" xmlns="http://www.w3.org/2000/svg"
-					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"> 
-			  
+					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+
 			    <path id="progress3" d="M0,0" fill="none"></path>
 
 			</svg>
@@ -42,8 +42,8 @@
 		<!-- progress circle 4 -->
 		<div style="position:relative; width:300px; height:300px; float:left; /-webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
 			<svg	id="progress-canvas4" xmlns="http://www.w3.org/2000/svg"
-					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"> 
-			  
+					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+
 			    <path id="progress4" d="M0,0" fill="none"></path>
 
 			</svg>
@@ -53,8 +53,8 @@
 		<!-- progress circle 5 -->
 		<div style="position:relative; width:100px; height:100px; float:left; /-webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
 			<svg	id="progress-canvas5" xmlns="http://www.w3.org/2000/svg"
-					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"> 
-			  
+					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+
 			    <path id="progress5" d="M0,0" fill="none"></path>
 
 			</svg>
@@ -64,7 +64,7 @@
 		<!-- Cirlular Progress JS -->
 		<script src="ProgressCircle.js"></script>
 
-		<script> 
+		<script>
 		    window.onclick = function(e) {
 		    	window.progressCircle1.start();
 		    	window.progressCircle2.start();
@@ -72,7 +72,6 @@
 		    	window.progressCircle4.start();
 		    	window.progressCircle5.start();
 		    };
-
 
 		    window.onload = function() {
 		    	(window.progressCircle1 = new ProgressCircle()).init({
@@ -99,11 +98,11 @@
 		    		strokeWidth: 50,
 		    		fill: '#FF89A3',
 		    		useLabel: true,
-		    		stopValue: 0.65,
+		    		stopValue: 0.1,
 		    		unit: '%',
 		    		scaleFont: true,
 		    		direction: 1,
-		    		easing: 'easeOutQuint',
+		    		easing: 'easeOutCubic',
 		    		callback: null
 		    	});
 
@@ -116,8 +115,9 @@
 		    		fill: '#FF89A3',
 		    		useLabel: true,
 		    		stopValue: 1,
-		    		unit: '&cent;',
+		    		unit: 'lb',
 		    		scaleFont: true,
+					maxLabelValue: 25.60,
 		    		direction: 1,
 		    		strokeLinecap: 'round',
 		    		callback: null
@@ -156,13 +156,11 @@
 		    		callback: null
 		    	});
 
-		    	
 		    	window.progressCircle1.start();
 		    	window.progressCircle2.start();
 		    	window.progressCircle3.start();
 		    	window.progressCircle4.start();
 		    	window.progressCircle5.start();
-
 
 			    window.progressCircle1.data.circle.addEventListener('click', function(e) {
 				    e.stopImmediatePropagation();
@@ -185,6 +183,6 @@
 			    	window.progressCircle5.start();
 			    });
 		    };
-		</script> 
+		</script>
 	</body>
 </html>

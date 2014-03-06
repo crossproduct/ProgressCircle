@@ -43,11 +43,13 @@ ProgressCircle.prototype.init = function(data) {
     if(!this.data.strokeWidth) this.data.strokeWidth = 1;
     if(!this.data.useLabel) this.data.useLabel = false;
     if(!this.data.scaleFont) this.data.scaleFont = false;
+    if(!this.data.maxLabelValue) this.data.maxLabelValue = 100.00;
     if(!this.data.direction) this.data.direction = 1;
     if(this.data.direction < 0 ) this.data.direction = -1;
     else this.data.direction = 1;
+    if(!this.data.countdown) this.data.countdown = false;
     if(!this.data.strokeLinecap) this.data.strokeLinecap = "";
-    
+
     if(this.data.stopValue != 1) this.data.fill = "none";
 
     // init the attr on the path
@@ -56,7 +58,7 @@ ProgressCircle.prototype.init = function(data) {
     this.data.circle.setAttribute('stroke', this.data.stroke);
     this.data.circle.setAttribute('stroke-width', this.data.strokeWidth);
     this.data.circle.setAttribute('stroke-linecap', this.data.strokeLinecap);
-    
+
     if(this.data.trackColor) {
         this.data.circle.parentElement.style.boxShadow = 'inset 0 0 0 '+ this.data.strokeWidth+ 'px '+this.data.trackColor;
         this.data.circle.parentElement.style.webkitBoxShadow = 'inset 0 0 0 '+ this.data.strokeWidth+ 'px '+this.data.trackColor;
@@ -114,6 +116,7 @@ ProgressCircle.prototype.removeEventHandler = function() {
  * Cleans up anything necessary before it destroys the path element
  */
 ProgressCircle.prototype.destroy = function() {
+    window.cancelAnimationFrame(this.requestId);
     if(!this.data) return;
     this.data.circle.parentNode.removeChild(this.data.circle);
     this.data = null;
@@ -133,9 +136,11 @@ ProgressCircle.prototype.reset = function() {
     this.data.circle.parentElement.parentElement.children[this.data.circle.parentElement.parentElement.childElementCount-1].innerHTML = "";
 
     this.i = 0;
+    this.i_offset = 0;
     this.angle = 0 + this.data.startAngle;
-    this.time = -1;
     this.velocity = 1;
+    this.stopAngle = this.data.startAngle + (this.data.stopValue * 360);
+    this.i_max = +((360/this.stepSize)*this.data.stopValue).toFixed(0);
 
     this.data.circle.style.transition = "";
 };
@@ -151,7 +156,7 @@ ProgressCircle.prototype.set = function(value) {
     this.angle = 0 + this.data.startAngle;
     this.i = 0;
     var to_i = +((360/this.stepSize)*value).toFixed(2);
-   
+
     this.velocity = to_i;
 
     var label = this.data.circle.parentElement.parentElement.children[this.data.circle.parentElement.parentElement.childElementCount-1];
@@ -165,12 +170,12 @@ ProgressCircle.prototype.set = function(value) {
         var radians= (this.angle/180) * Math.PI;
         var x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
         var y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
-        
+
         if(this.i === 0 || d == "M0,0")
             d = "M "+x + " " + y;
         else
             d = d + " L "+x + " " + y;
-        
+
         this.angle += (this.stepSize * this.data.direction);
         // if at the end, close the circle and stop the timer
         if( this.i >= to_i && value === 1 ) {
@@ -182,7 +187,7 @@ ProgressCircle.prototype.set = function(value) {
             y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
             d = d+ " L "+x + " " + y;
             if(this.data.stopValue === 1) d += ' Z';
-      
+
             // set the fill
             this.data.circle.setAttribute('fill', this.data.fill);
 
@@ -195,11 +200,27 @@ ProgressCircle.prototype.set = function(value) {
         this.data.circle.setAttribute("d", d);
         // update the label only once since there really is no animation
         if(this.data.useLabel === true) {
-            label.innerHTML = (+((this.stepSize*100*this.i)/360).toFixed(0)) + this.data.unit;
+            label.innerHTML = (+((this.stepSize*this.data.maxLabelValue*(this.i+1))/360).toFixed(((''+this.data.maxLabelValue).split('.')[1] || []).length)) + this.data.unit;
             label.style.width = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
             label.style.height = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
         }
     }
+};
+
+/**
+ * Animate the progress from to the passed value from the current position.
+ * @param {integer} value A value between [0,1] indicating what percentage from startAngle to stop.
+ */
+ProgressCircle.prototype.animateTo = function(value) {
+    // debug only handle increment at the moment
+    if(value <= this.data.stopValue) return;
+
+    // get our new stop angle and i_max values
+    this.stopAngle = this.data.startAngle +(value * 360);
+    this.i_max = +((360/this.stepSize)*value).toFixed(0);
+    this.start_time = Date.now();
+    this.i_offset = this.i;
+    this.animate();
 };
 
 /**
@@ -234,18 +255,19 @@ ProgressCircle.prototype.render = function() {
     var label = this.data.circle.parentElement.parentElement.children[this.data.circle.parentElement.parentElement.childElementCount-1];
     var now = Date.now();
     var dTime =  now - this.start_time;
-    var to_i = +((dTime / this.data.duration) * this.i_max).toFixed(0); // linear
+    var to_i = +((dTime / this.data.duration) * (this.i_max-this.i_offset)).toFixed(0); // linear
+    to_i += this.i_offset;
     if(to_i > this.i_max) to_i = this.i_max;  // normalize within bounds
     this.velocity = to_i - this.i;
 
     if(this.data.hasOwnProperty('easing')  && ProgressCircle.hasOwnProperty(this.data.easing)) {
-        var to_i_ease = ProgressCircle[this.data.easing](to_i, 0, 1, this.i_max) * this.i_max;
-        this.velocity = +(to_i_ease).toFixed(1) - this.i;
+        var to_i_ease = ProgressCircle[this.data.easing]((to_i-this.i_offset), 0, 1, (this.i_max-this.i_offset)) * (this.i_max-this.i_offset);
+        this.velocity = +(to_i_ease+this.i_offset).toFixed(0) - this.i;
     }
 
     var d;
     d = this.data.circle.getAttribute("d");
-    if( this.i >= this.i_max || this.i === 0 && this.velocity <= 0 ) {
+    if( this.i >= this.i_max || false && this.i === 0 && this.velocity <= 0 ) {
         this.velocity = 1;
     }
     for(var n=0; n <= this.velocity; n++) {
@@ -253,12 +275,12 @@ ProgressCircle.prototype.render = function() {
         var radians= (this.angle/180) * Math.PI;
         var x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
         var y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
-        
+
         if(this.i === 0 || d == "M0,0")
             d = "M "+x + " " + y;
         else
             d = d + " L "+x + " " + y;
-        
+
         this.angle += (this.stepSize * this.data.direction);
 
         // if at the end, close the circle and stop the timer
@@ -271,7 +293,7 @@ ProgressCircle.prototype.render = function() {
             y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
             d = d+ " L "+x + " " + y;
             if(this.data.stopValue === 1) d += ' Z';
-      
+
             // set the fill
             this.data.circle.setAttribute('fill', this.data.fill);
 
@@ -280,30 +302,96 @@ ProgressCircle.prototype.render = function() {
 
         // update the label
         if(this.data.useLabel === true) {
-            label.innerHTML = (+((this.stepSize*100*this.i)/360).toFixed(0)) + this.data.unit;
+            label.innerHTML = (+((this.stepSize*this.data.maxLabelValue*(this.i+1))/360).toFixed(((''+this.data.maxLabelValue).split('.')[1] || []).length)) + this.data.unit;
             label.style.width = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
             label.style.height = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
         }
         this.i++;
     }
-    if(this.velocity > 0) this.data.circle.setAttribute("d", d);
+
+    this.data.circle.setAttribute("d", d);
+};
+
+ProgressCircle.prototype.countdown = function() {
+
+};
+
+ProgressCircle.prototype.renderCountdown = function() {
+   var label = this.data.circle.parentElement.parentElement.children[this.data.circle.parentElement.parentElement.childElementCount-1];
+   var now = Date.now();
+   var dTime =  now - this.start_time;
+   var to_i = +((dTime / this.data.duration) * (this.i_max-this.i_offset)).toFixed(0); // linear
+   to_i += this.i_offset;
+   if(to_i > this.i_max) to_i = this.i_max;  // normalize within bounds
+   this.velocity = to_i - this.i;
+
+   if(this.data.hasOwnProperty('easing')  && ProgressCircle.hasOwnProperty(this.data.easing)) {
+       var to_i_ease = ProgressCircle[this.data.easing]((to_i-this.i_offset), 0, 1, (this.i_max-this.i_offset)) * (this.i_max-this.i_offset);
+       this.velocity = +(to_i_ease+this.i_offset).toFixed(0) - this.i;
+   }
+
+   var d;
+   d = this.data.circle.getAttribute("d");
+   if( this.i >= this.i_max || false && this.i === 0 && this.velocity <= 0 ) {
+       this.velocity = 1;
+   }
+   for(var n=0; n <= this.velocity; n++) {
+       this.angle %= 360;
+       var radians= (this.angle/180) * Math.PI;
+       var x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
+       var y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
+
+       if(this.i === 0 || d == "M0,0")
+           d = "M "+x + " " + y;
+       else
+           d = d + " L "+x + " " + y;
+
+       this.angle += (this.stepSize * this.data.direction);
+
+       // if at the end, close the circle and stop the timer
+       if( this.i >= this.i_max ) {
+
+           this.angle += (this.stepSize * this.data.direction);
+           this.angle %= 360;
+           radians= (this.angle/180) * Math.PI;
+           x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
+           y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
+           d = d+ " L "+x + " " + y;
+           if(this.data.stopValue === 1) d += ' Z';
+
+           // set the fill
+           this.data.circle.setAttribute('fill', this.data.fill);
+
+           break;
+       }
+
+       // update the label
+       if(this.data.useLabel === true) {
+           label.innerHTML = (+((this.stepSize*this.data.maxLabelValue*(this.i+1))/360).toFixed(((''+this.data.maxLabelValue).split('.')[1] || []).length)) + this.data.unit;
+           label.style.width = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
+           label.style.height = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
+       }
+       this.i++;
+   }
+
+   this.data.circle.setAttribute("d", d);
 };
 
 /**
- * Based on the current initialization object, 
+ * Based on the current initialization object,
  * @return {String} A string representing the progress circle for the path element
  */
 ProgressCircle.prototype.calculatePath = function() {
 
     var value = this.data.stopValue;
-    
+
     var i = 0;
     var angle = 0 + this.data.startAngle;
 
     if(value <= 0) return;
     angle = 0 + this.data.startAngle;
     var to_i = +((360/this.stepSize)*value).toFixed(2);
-   
+
     velocity = to_i;
 
     var d;
@@ -315,12 +403,12 @@ ProgressCircle.prototype.calculatePath = function() {
         var radians= (angle/180) * Math.PI;
         var x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
         var y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
-        
+
         if(i === 0 || d == "M0,0")
             d = "M "+x + " " + y;
         else
             d = d + " L "+x + " " + y;
-        
+
         angle += (this.stepSize * this.data.direction);
         // if at the end, close the circle and stop the timer
         if( i >= to_i && value === 1 ) {
@@ -332,7 +420,7 @@ ProgressCircle.prototype.calculatePath = function() {
             y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
             d = d+ " L "+x + " " + y;
             if(this.data.stopValue === 1) d += ' Z';
-      
+
             break;
         }
         i++;
@@ -341,7 +429,7 @@ ProgressCircle.prototype.calculatePath = function() {
 };
 
 /**
- * This is an alternative version of start that utilizes a CSS3 transition property on the SVG to achieve the animation. It's good to have alternates.
+ * This is an alternative version of start that utilizes a CSS3 transition property on the SVG to achieve the animation.
  */
 ProgressCircle.prototype.start_alt = function() {
     // reset some things
@@ -352,7 +440,7 @@ ProgressCircle.prototype.start_alt = function() {
     this.data.circle.setAttribute("d", this.calculatePath());
 
     // calculate the length of the path, we use this later for setting the stroke-dasharray and stroke-dashoffset
-    var pathLength = this.data.circle.getTotalLength(); console.log(pathLength);
+    var pathLength = this.data.circle.getTotalLength();
     this.data.circle.style.strokeDasharray = pathLength + ' ' + pathLength;
     this.data.circle.style.strokeDashoffset = pathLength;
     // force a layout so the browser can get certain initial values calculated

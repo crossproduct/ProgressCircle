@@ -17,10 +17,10 @@ Load the .js ...
 Build a home for a ```<path>``` element in your own styling.
 
 ```
-<div style="position:relative; width:450px; height:450px; float:left;">
-	<svg	id="progress-canvas1" xmlns="http://www.w3.org/2000/svg"
+<div style="width:450px; height:450px;">
+	<svg	id="progress-canvas" xmlns="http://www.w3.org/2000/svg"
 			xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
-	    <path id="progress1" d="M0,0" fill="none"></path>
+	    <path id="progress" d="M0,0" fill="none"></path>
 	</svg>
 	<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif"></div>
 </div>
@@ -31,7 +31,7 @@ Initialize an instance of ```ProgressCircle``` and call ```start()```
 <script>
 	window.onload = function() {
 		(progressCircle1 = new ProgressCircle()).init({
-			circle: document.getElementById('progress1'),
+			circle: document.getElementById('progress'),
 			duration: 6000,
 			startAngle: 90,
 			stroke: '#FF1133',
@@ -44,7 +44,7 @@ Initialize an instance of ```ProgressCircle``` and call ```start()```
 			direction: -1,
 			callback: null
 		});
-	
+
 		// start the animation
 		progressCircle1.start();
 	};
@@ -63,7 +63,8 @@ name | type | description
 ```fill``` | (optional, default 'none') | When the stopValue is set to 1, i.e. a full circle, this value will be used to set the fill attribute. Values are a hex color string or 'none'.
 ```useLabel``` | boolean (optional, default false) | Whether or not to show the label annotation.
 ```stopValue``` | float (optional, default 1) | A value between ```[0,1]``` indicating what percentage from startAngle to stop.
-```unit``` | string (optional, default '') | A string representing a unit value to be appened to the label if used.
+```unit``` | string (optional, default '') | A string representing a unit type to be appened to the label if used.
+```maxLabelValue``` | float (optional, default 100) | A number representing the max value to be mapped for the progress label. The percentage is translated into a function of this value.
 ```scaleFont``` | boolean (optional, default true) | If the label is to be displayed, this value allows the font-size to be autoscaled.
 ```direction``` | integer (optional, default 1) | Evaluated as an integer, a negative value indicates counter clockwise, else clockwise
 ```trackColor``` | string (optional) | The color, and thus presence, of a track underneath the progress.
@@ -79,6 +80,7 @@ function | parameter | description
 ------------- | ------------- | -------------
 start() | *none* | Starts animation.
 set() | float | Sets the direct value of the progres circle between ```[0,1]```.
+animateTo() | float | Animates to the specified value. ***Currenlty only works against values that are larger than the current.*
 reset() | *none* | Resets the display and instance values of the progress circle.
 
 
