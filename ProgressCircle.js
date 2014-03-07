@@ -132,6 +132,7 @@ ProgressCircle.prototype.reset = function() {
     this.data.circle.setAttribute('d','M0,0');
     this.data.circle.setAttribute('fill', 'none');
 
+
     // reset the label
     this.data.circle.parentElement.parentElement.children[this.data.circle.parentElement.parentElement.childElementCount-1].innerHTML = "";
 
@@ -212,8 +213,17 @@ ProgressCircle.prototype.set = function(value) {
  * @param {integer} value A value between [0,1] indicating what percentage from startAngle to stop.
  */
 ProgressCircle.prototype.animateTo = function(value) {
+    this.data.stopValue = value;
+
+    if(this.data.stopValue != 1) {
+        this.data.fillTemp = this.data.fill;
+        this.data.fill = "none";
+    } else {
+        this.data.fill = this.data.fillTemp;
+    }
+
     // debug only handle increment at the moment
-    if(value <= this.data.stopValue) return;
+    if(value < this.data.stopValue && this.i !== 0) return;
 
     // get our new stop angle and i_max values
     this.stopAngle = this.data.startAngle +(value * 360);
@@ -381,9 +391,10 @@ ProgressCircle.prototype.renderCountdown = function() {
  * Based on the current initialization object,
  * @return {String} A string representing the progress circle for the path element
  */
-ProgressCircle.prototype.calculatePath = function() {
+ProgressCircle.prototype.calculatePath = function(stopValue) {
 
     var value = this.data.stopValue;
+    if(stopValue) value = stopValue;
 
     var i = 0;
     var angle = 0 + this.data.startAngle;
@@ -437,7 +448,7 @@ ProgressCircle.prototype.start_alt = function() {
     this.data.circle.setAttribute('fill', 'none');
 
     // resolve the path data
-    this.data.circle.setAttribute("d", this.calculatePath());
+    this.data.circle.setAttribute("d", this.calculatePath(1.0));
 
     // calculate the length of the path, we use this later for setting the stroke-dasharray and stroke-dashoffset
     var pathLength = this.data.circle.getTotalLength();
@@ -450,6 +461,8 @@ ProgressCircle.prototype.start_alt = function() {
 
     // trigger the start
     this.data.circle.style.strokeDashoffset = '0';
+
+    //progressCircle1.data.circle.style.strokeDashoffset = (1 - lerped) * progressCircle1.data.circle.getTotalLength()
 };
 
 /**
