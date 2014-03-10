@@ -59,6 +59,7 @@ ProgressCircle.prototype.init = function(data) {
     this.data.circle.setAttribute('stroke-width', this.data.strokeWidth);
     this.data.circle.setAttribute('stroke-linecap', this.data.strokeLinecap);
 
+    // produce a track :)
     if(this.data.trackColor) {
         this.data.circle.parentElement.style.boxShadow = 'inset 0 0 0 '+ this.data.strokeWidth+ 'px '+this.data.trackColor;
         this.data.circle.parentElement.style.webkitBoxShadow = 'inset 0 0 0 '+ this.data.strokeWidth+ 'px '+this.data.trackColor;
@@ -68,6 +69,7 @@ ProgressCircle.prototype.init = function(data) {
 
     this.data.startAngle %= 360; // normalize input
     this.data.stopValue = +this.data.stopValue.toFixed(2);
+    this.deltaValue = this.data.stopValue;
 
     // calculate the adjusted radius
     var circleParent = this.data.circle.parentNode;
@@ -86,13 +88,32 @@ ProgressCircle.prototype.init = function(data) {
     this.angle = 0 + this.data.startAngle;
     this.finalAngle = 360 + this.data.startAngle;
     this.circumference = 2 * Math.PI * (this.radius + this.data.strokeWidth/2);
-    this.stepSize = 0.5;
+    this.stepSize = 0.1;
     this.velocity = 1;
     this.stopAngle = this.data.startAngle + (this.data.stopValue * 360);
 
     this.i_max = +((360/this.stepSize)*this.data.stopValue).toFixed(0);
 
     this.addEventListeners();
+
+// ------------------
+
+    // reset some things
+    this.data.circle.style.transition = "";
+    this.data.circle.setAttribute('fill', 'none');
+
+    // resolve the path data
+    this.data.circle.setAttribute("d", this.calculatePath(1.0));
+
+    // calculate the length of the path, we use this later for setting the stroke-dasharray and stroke-dashoffset
+    this.pathLength = this.data.circle.getTotalLength();
+    this.data.circle.style.strokeDasharray = this.pathLength + ' ' + this.pathLength;
+    this.data.circle.style.strokeDashoffset = this.pathLength;
+
+    // force a layout so the browser can get certain initial values calculated
+    this.data.circle.getBoundingClientRect();
+
+    this.previous_offset = this.pathLength;
 };
 
 /**
@@ -128,16 +149,30 @@ ProgressCircle.prototype.destroy = function() {
 ProgressCircle.prototype.reset = function() {
     // stop any rAF loops
     window.cancelAnimationFrame(this.requestId);
+
     // reset the d and fill attr
-    this.data.circle.setAttribute('d','M0,0');
     this.data.circle.setAttribute('fill', 'none');
 
+    // reset some things
+    this.data.circle.style.transition = "";
+    this.data.circle.setAttribute('fill', 'none');
+
+    // resolve the path data
+    this.data.circle.setAttribute("d", this.calculatePath(1.0));
+
+    // calculate the length of the path, we use this later for setting the stroke-dasharray and stroke-dashoffset
+    this.pathLength = this.data.circle.getTotalLength();
+    this.data.circle.style.strokeDasharray = this.pathLength + ' ' + this.pathLength;
+    this.data.circle.style.strokeDashoffset = this.pathLength;
+
+    // force a layout so the browser can get certain initial values calculated
+    this.data.circle.getBoundingClientRect();
 
     // reset the label
     this.data.circle.parentElement.parentElement.children[this.data.circle.parentElement.parentElement.childElementCount-1].innerHTML = "";
 
     this.i = 0;
-    this.i_offset = 0;
+    this.previous_offset = this.pathLength;
     this.angle = 0 + this.data.startAngle;
     this.velocity = 1;
     this.stopAngle = this.data.startAngle + (this.data.stopValue * 360);
@@ -153,59 +188,25 @@ ProgressCircle.prototype.reset = function() {
 ProgressCircle.prototype.set = function(value) {
     if(value > 1) value = 1;
     this.reset();
-    if(value <= 0) return;
-    this.angle = 0 + this.data.startAngle;
-    this.i = 0;
+    if(value < 0) value = 0;
+
     var to_i = +((360/this.stepSize)*value).toFixed(2);
 
     this.velocity = to_i;
 
     var label = this.data.circle.parentElement.parentElement.children[this.data.circle.parentElement.parentElement.childElementCount-1];
-    var d;
-    d = this.data.circle.getAttribute("d");
-    if( this.i > to_i || (this.i === 0 && this.velocity === 0) ) {
-        this.velocity = 1;
+
+    if( value === 1 )
+        this.data.circle.setAttribute('fill', this.data.fill);
+  
+    // update the label only once since there really is no animation
+    if(this.data.useLabel === true) {
+        label.innerHTML = +((value*this.data.maxLabelValue).toFixed(((''+this.data.maxLabelValue).split('.')[1] || []).length)) + this.data.unit;
+        label.style.width = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
+        label.style.height = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
     }
-    for(var n=0; n <= this.velocity; n++) {
-        this.angle %= 360;
-        var radians= (this.angle/180) * Math.PI;
-        var x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
-        var y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
 
-        if(this.i === 0 || d == "M0,0")
-            d = "M "+x + " " + y;
-        else
-            d = d + " L "+x + " " + y;
-
-        this.angle += (this.stepSize * this.data.direction);
-        // if at the end, close the circle and stop the timer
-        if( this.i >= to_i && value === 1 ) {
-
-            this.angle += (this.stepSize * this.data.direction);
-            this.angle %= 360;
-            radians= (this.angle/180) * Math.PI;
-            x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
-            y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
-            d = d+ " L "+x + " " + y;
-            if(this.data.stopValue === 1) d += ' Z';
-
-            // set the fill
-            this.data.circle.setAttribute('fill', this.data.fill);
-
-            break;
-        }
-        this.i++;
-    }
-    if(this.velocity > 0) {
-        this.i--;
-        this.data.circle.setAttribute("d", d);
-        // update the label only once since there really is no animation
-        if(this.data.useLabel === true) {
-            label.innerHTML = (+((this.stepSize*this.data.maxLabelValue*(this.i+1))/360).toFixed(((''+this.data.maxLabelValue).split('.')[1] || []).length)) + this.data.unit;
-            label.style.width = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
-            label.style.height = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
-        }
-    }
+    this.data.circle.style.strokeDashoffset = (1 - value) * this.data.circle.getTotalLength();
 };
 
 /**
@@ -213,6 +214,7 @@ ProgressCircle.prototype.set = function(value) {
  * @param {integer} value A value between [0,1] indicating what percentage from startAngle to stop.
  */
 ProgressCircle.prototype.animateTo = function(value) {
+    this.deltaValue = value - this.data.stopValue; console.log(this.deltaValue);
     this.data.stopValue = value;
 
     if(this.data.stopValue != 1) {
@@ -223,13 +225,14 @@ ProgressCircle.prototype.animateTo = function(value) {
     }
 
     // debug only handle increment at the moment
-    if(value < this.data.stopValue && this.i !== 0) return;
+    //if(value < this.data.stopValue && this.i !== 0) return;
 
     // get our new stop angle and i_max values
     this.stopAngle = this.data.startAngle +(value * 360);
-    this.i_max = +((360/this.stepSize)*value).toFixed(0);
+    this.i_max = +((360/this.stepSize)*value);
     this.start_time = Date.now();
-    this.i_offset = this.i;
+    this.previous_offset = this.data.circle.style.strokeDashoffset;
+
     this.animate();
 };
 
@@ -248,8 +251,16 @@ ProgressCircle.prototype.start = function() {
 ProgressCircle.prototype.animate = function() {
     var self = this;
     this.requestId = window.requestAnimationFrame(function() {
-        if( self.i >= self.i_max ) {
-            self.render();
+        if( (Date.now() - self.start_time) >= self.data.duration) {
+            self.data.circle.style.strokeDashoffset = ((1 - self.data.stopValue) * self.data.circle.getTotalLength());
+            self.data.circle.setAttribute('fill', self.data.fill);
+            // update the label
+            if(self.data.useLabel === true) {
+                var label = self.data.circle.parentElement.parentElement.children[self.data.circle.parentElement.parentElement.childElementCount-1];
+                label.innerHTML = +((self.data.stopValue*self.data.maxLabelValue).toFixed(((''+self.data.maxLabelValue).split('.')[1] || []).length)) + self.data.unit;
+                label.style.width = ((self.radius+self.data.strokeWidth/2) * 2)+'px';
+                label.style.height = ((self.radius+self.data.strokeWidth/2) * 2)+'px';
+            }
             if(self.data.callback) self.data.callback();
         } else {
             self.render();
@@ -259,132 +270,39 @@ ProgressCircle.prototype.animate = function() {
 };
 
 /**
- * Calculates the current deltas to add to the path's d attribute and appends them based on the delta of time.
+ * Renders the SVG path at the interpolated frame
  */
 ProgressCircle.prototype.render = function() {
     var label = this.data.circle.parentElement.parentElement.children[this.data.circle.parentElement.parentElement.childElementCount-1];
     var now = Date.now();
     var dTime =  now - this.start_time;
-    var to_i = +((dTime / this.data.duration) * (this.i_max-this.i_offset)).toFixed(0); // linear
-    to_i += this.i_offset;
-    if(to_i > this.i_max) to_i = this.i_max;  // normalize within bounds
-    this.velocity = to_i - this.i;
+    this.lerped = (dTime / this.data.duration);
 
-    if(this.data.hasOwnProperty('easing')  && ProgressCircle.hasOwnProperty(this.data.easing)) {
-        var to_i_ease = ProgressCircle[this.data.easing]((to_i-this.i_offset), 0, 1, (this.i_max-this.i_offset)) * (this.i_max-this.i_offset);
-        this.velocity = +(to_i_ease+this.i_offset).toFixed(0) - this.i;
+    if(this.data.hasOwnProperty('easing') && ProgressCircle.hasOwnProperty(this.data.easing)) {
+        this.lerped = ProgressCircle[this.data.easing](dTime, 0, 1, this.data.duration);
     }
 
-    var d;
-    d = this.data.circle.getAttribute("d");
-    if( this.i >= this.i_max || false && this.i === 0 && this.velocity <= 0 ) {
-        this.velocity = 1;
-    }
-    for(var n=0; n <= this.velocity; n++) {
-        this.angle %= 360;
-        var radians= (this.angle/180) * Math.PI;
-        var x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
-        var y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
+    if(this.lerped > 1) this.lerped = 1;
+    if(this.lerped < 0) this.lerped = 0;
 
-        if(this.i === 0 || d == "M0,0")
-            d = "M "+x + " " + y;
-        else
-            d = d + " L "+x + " " + y;
+    //this.lerped = (this.lerped*this.data.stopValue);
+    this.lerped = (this.lerped*(this.deltaValue) );
 
-        this.angle += (this.stepSize * this.data.direction);
+    //this.data.circle.style.strokeDashoffset = ( (1 - this.lerped) * (this.data.circle.getTotalLength() ) );
+    this.data.circle.style.strokeDashoffset = ( (1 - this.lerped) * (this.data.circle.getTotalLength() ) ) - (this.data.circle.getTotalLength() - parseInt(this.previous_offset, 10));
 
-        // if at the end, close the circle and stop the timer
-        if( this.i >= this.i_max ) {
-
-            this.angle += (this.stepSize * this.data.direction);
-            this.angle %= 360;
-            radians= (this.angle/180) * Math.PI;
-            x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
-            y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
-            d = d+ " L "+x + " " + y;
-            if(this.data.stopValue === 1) d += ' Z';
-
-            // set the fill
-            this.data.circle.setAttribute('fill', this.data.fill);
-
-            break;
-        }
-
-        // update the label
-        if(this.data.useLabel === true) {
-            label.innerHTML = (+((this.stepSize*this.data.maxLabelValue*(this.i+1))/360).toFixed(((''+this.data.maxLabelValue).split('.')[1] || []).length)) + this.data.unit;
-            label.style.width = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
-            label.style.height = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
-        }
-        this.i++;
+    // update the label
+    if(this.data.useLabel === true) {
+        //label.innerHTML = +((this.lerped*this.data.maxLabelValue).toFixed(((''+this.data.maxLabelValue).split('.')[1] || []).length)) + this.data.unit;
+        label.innerHTML = +(((this.pathLength - parseInt(this.data.circle.style.strokeDashoffset,10)) * this.data.maxLabelValue / this.pathLength).toFixed(((''+this.data.maxLabelValue).split('.')[1] || []).length)) + this.data.unit;
+        label.style.width = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
+        label.style.height = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
     }
 
-    this.data.circle.setAttribute("d", d);
-};
-
-ProgressCircle.prototype.countdown = function() {
-
-};
-
-ProgressCircle.prototype.renderCountdown = function() {
-   var label = this.data.circle.parentElement.parentElement.children[this.data.circle.parentElement.parentElement.childElementCount-1];
-   var now = Date.now();
-   var dTime =  now - this.start_time;
-   var to_i = +((dTime / this.data.duration) * (this.i_max-this.i_offset)).toFixed(0); // linear
-   to_i += this.i_offset;
-   if(to_i > this.i_max) to_i = this.i_max;  // normalize within bounds
-   this.velocity = to_i - this.i;
-
-   if(this.data.hasOwnProperty('easing')  && ProgressCircle.hasOwnProperty(this.data.easing)) {
-       var to_i_ease = ProgressCircle[this.data.easing]((to_i-this.i_offset), 0, 1, (this.i_max-this.i_offset)) * (this.i_max-this.i_offset);
-       this.velocity = +(to_i_ease+this.i_offset).toFixed(0) - this.i;
-   }
-
-   var d;
-   d = this.data.circle.getAttribute("d");
-   if( this.i >= this.i_max || false && this.i === 0 && this.velocity <= 0 ) {
-       this.velocity = 1;
-   }
-   for(var n=0; n <= this.velocity; n++) {
-       this.angle %= 360;
-       var radians= (this.angle/180) * Math.PI;
-       var x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
-       var y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
-
-       if(this.i === 0 || d == "M0,0")
-           d = "M "+x + " " + y;
-       else
-           d = d + " L "+x + " " + y;
-
-       this.angle += (this.stepSize * this.data.direction);
-
-       // if at the end, close the circle and stop the timer
-       if( this.i >= this.i_max ) {
-
-           this.angle += (this.stepSize * this.data.direction);
-           this.angle %= 360;
-           radians= (this.angle/180) * Math.PI;
-           x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
-           y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
-           d = d+ " L "+x + " " + y;
-           if(this.data.stopValue === 1) d += ' Z';
-
-           // set the fill
-           this.data.circle.setAttribute('fill', this.data.fill);
-
-           break;
-       }
-
-       // update the label
-       if(this.data.useLabel === true) {
-           label.innerHTML = (+((this.stepSize*this.data.maxLabelValue*(this.i+1))/360).toFixed(((''+this.data.maxLabelValue).split('.')[1] || []).length)) + this.data.unit;
-           label.style.width = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
-           label.style.height = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
-       }
-       this.i++;
-   }
-
-   this.data.circle.setAttribute("d", d);
+    // set the fill
+    if(parseInt(this.data.circle.style.strokeDashoffset, 10) <= ((1 - this.data.stopValue) * this.data.circle.getTotalLength())) {
+        this.data.circle.setAttribute('fill', this.data.fill);
+    }
 };
 
 /**
@@ -429,7 +347,7 @@ ProgressCircle.prototype.calculatePath = function(stopValue) {
             radians= (angle/180) * Math.PI;
             x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
             y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
-            d = d+ " L "+x + " " + y;
+            //d = d+ " L "+x + " " + y;
             if(this.data.stopValue === 1) d += ' Z';
 
             break;
@@ -437,32 +355,6 @@ ProgressCircle.prototype.calculatePath = function(stopValue) {
         i++;
     }
     return d;
-};
-
-/**
- * This is an alternative version of start that utilizes a CSS3 transition property on the SVG to achieve the animation.
- */
-ProgressCircle.prototype.start_alt = function() {
-    // reset some things
-    this.data.circle.style.transition = "";
-    this.data.circle.setAttribute('fill', 'none');
-
-    // resolve the path data
-    this.data.circle.setAttribute("d", this.calculatePath(1.0));
-
-    // calculate the length of the path, we use this later for setting the stroke-dasharray and stroke-dashoffset
-    var pathLength = this.data.circle.getTotalLength();
-    this.data.circle.style.strokeDasharray = pathLength + ' ' + pathLength;
-    this.data.circle.style.strokeDashoffset = pathLength;
-    // force a layout so the browser can get certain initial values calculated
-    this.data.circle.getBoundingClientRect();
-
-    this.data.circle.style.transition = this.data.circle.style.webkitTransition = 'stroke-dashoffset '+this.data.duration+'ms ease-in-out';
-
-    // trigger the start
-    this.data.circle.style.strokeDashoffset = '0';
-
-    //progressCircle1.data.circle.style.strokeDashoffset = (1 - lerped) * progressCircle1.data.circle.getTotalLength()
 };
 
 /**
