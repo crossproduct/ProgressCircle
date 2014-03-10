@@ -36,19 +36,19 @@ function ProgressCircle() {
  */
 ProgressCircle.prototype.init = function(data) {
     this.data = data;
-    if(!this.data.circle) return;//circle = document.getElementById("arc");
-    if(!this.data.stroke) this.data.stroke = '#EFEFEF';
+    if(!this.data.hasOwnProperty('circle')) return;//circle = document.getElementById("arc");
+    if(!this.data.hasOwnProperty('stroke')) this.data.stroke = '#EFEFEF';
     if(!this.data.startAngle) this.data.startAngle = 0;
-    if(!this.data.stopValue) this.data.stopValue = 1;
-    if(!this.data.strokeWidth) this.data.strokeWidth = 1;
-    if(!this.data.useLabel) this.data.useLabel = false;
-    if(!this.data.scaleFont) this.data.scaleFont = false;
-    if(!this.data.maxLabelValue) this.data.maxLabelValue = 100.00;
-    if(!this.data.direction) this.data.direction = 1;
+    if(!this.data.hasOwnProperty('stopValue')) this.data.stopValue = 1;
+    if(!this.data.hasOwnProperty('strokeWidth')) this.data.strokeWidth = 1;
+    if(!this.data.hasOwnProperty('useLabel')) this.data.useLabel = false;
+    if(!this.data.hasOwnProperty('scaleFont')) this.data.scaleFont = false;
+    if(!this.data.hasOwnProperty('maxLabelValue')) this.data.maxLabelValue = 100.00;
+    if(!this.data.hasOwnProperty('direction')) this.data.direction = 1;
     if(this.data.direction < 0 ) this.data.direction = -1;
     else this.data.direction = 1;
-    if(!this.data.countdown) this.data.countdown = false;
-    if(!this.data.strokeLinecap) this.data.strokeLinecap = "";
+    if(!this.data.hasOwnProperty('countdown')) this.data.countdown = false;
+    if(!this.data.hasOwnProperty('strokeLinecap')) this.data.strokeLinecap = "";
 
     if(this.data.stopValue != 1) this.data.fill = "none";
 
@@ -285,15 +285,12 @@ ProgressCircle.prototype.render = function() {
     if(this.lerped > 1) this.lerped = 1;
     if(this.lerped < 0) this.lerped = 0;
 
-    //this.lerped = (this.lerped*this.data.stopValue);
     this.lerped = (this.lerped*(this.deltaValue) );
 
-    //this.data.circle.style.strokeDashoffset = ( (1 - this.lerped) * (this.data.circle.getTotalLength() ) );
     this.data.circle.style.strokeDashoffset = ( (1 - this.lerped) * (this.data.circle.getTotalLength() ) ) - (this.data.circle.getTotalLength() - parseInt(this.previous_offset, 10));
 
     // update the label
     if(this.data.useLabel === true) {
-        //label.innerHTML = +((this.lerped*this.data.maxLabelValue).toFixed(((''+this.data.maxLabelValue).split('.')[1] || []).length)) + this.data.unit;
         label.innerHTML = +(((this.pathLength - parseInt(this.data.circle.style.strokeDashoffset,10)) * this.data.maxLabelValue / this.pathLength).toFixed(((''+this.data.maxLabelValue).split('.')[1] || []).length)) + this.data.unit;
         label.style.width = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
         label.style.height = ((this.radius+this.data.strokeWidth/2) * 2)+'px';
