@@ -80,7 +80,7 @@ function | parameter | description
 ------------- | ------------- | -------------
 start() | *none* | Starts animation.
 set() | float | Sets the direct value of the progres circle between ```[0,1]```.
-animateTo() | float | Animates to the specified value. ***Currenlty only works against values that are larger than the current.*
+animateTo() | float | Animates to the specified value.
 reset() | *none* | Resets the display and instance values of the progress circle.
 
 
