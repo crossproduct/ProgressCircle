@@ -214,7 +214,7 @@ ProgressCircle.prototype.set = function(value) {
  * @param {integer} value A value between [0,1] indicating what percentage from startAngle to stop.
  */
 ProgressCircle.prototype.animateTo = function(value) {
-    this.deltaValue = value - this.data.stopValue; console.log(this.deltaValue);
+    this.deltaValue = value - ((this.pathLength - parseInt(this.data.circle.style.strokeDashoffset, 10))/this.pathLength);
     this.data.stopValue = value;
 
     if(this.data.stopValue != 1) {
