@@ -88,7 +88,7 @@ ProgressCircle.prototype.init = function(data) {
     this.angle = 0 + this.data.startAngle;
     this.finalAngle = 360 + this.data.startAngle;
     this.circumference = 2 * Math.PI * (this.radius + this.data.strokeWidth/2);
-    this.stepSize = 0.1;
+    this.stepSize = 1.0;
     this.velocity = 1;
     this.stopAngle = this.data.startAngle + (this.data.stopValue * 360);
 
@@ -223,9 +223,6 @@ ProgressCircle.prototype.animateTo = function(value) {
     } else {
         this.data.fill = this.data.fillTemp;
     }
-
-    // debug only handle increment at the moment
-    //if(value < this.data.stopValue && this.i !== 0) return;
 
     // get our new stop angle and i_max values
     this.stopAngle = this.data.startAngle +(value * 360);
