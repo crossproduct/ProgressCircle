@@ -384,15 +384,15 @@ ProgressCircle.prototype.calculatePath = function(stopValue) {
 
     velocity = to_i;
 
-    var d;
+    var d, raidans, x, y;
     if( i > to_i || (i === 0 && velocity === 0) ) {
         velocity = 1;
     }
     for(var n=0; n <= velocity; n++) {
         angle %= 360;
-        var radians= (angle/180) * Math.PI;
-        var x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
-        var y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
+        radians= (angle/180) * Math.PI;
+        x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
+        y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
 
         if(i === 0 || d == "M0,0")
             d = "M "+x + " " + y;
@@ -400,21 +400,16 @@ ProgressCircle.prototype.calculatePath = function(stopValue) {
             d = d + " L "+x + " " + y;
 
         angle += (this.stepSize * this.data.direction);
-        // if at the end, close the circle and stop the timer
-        if( i >= to_i && value === 1 ) {
-
-            angle += (this.stepSize * this.data.direction);
-            angle %= 360;
-            radians= (angle/180) * Math.PI;
-            x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
-            y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
-            //d = d+ " L "+x + " " + y;
-            if(this.data.stopValue === 1) d += ' Z';
-
-            break;
-        }
         i++;
     }
+    angle += (this.stepSize * this.data.direction);
+    angle %= 360;
+    radians= (angle/180) * Math.PI;
+    x = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.cos(radians) * this.radius;
+    y = (this.radius+parseInt(this.data.strokeWidth, 10)/2) + Math.sin(radians) * this.radius;
+    d = d+ " L "+x + " " + y;
+
+    if(this.data.stopValue === 1) d += ' Z';
     return d;
 };
 
