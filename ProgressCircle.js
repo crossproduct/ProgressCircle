@@ -94,10 +94,6 @@ ProgressCircle.prototype.init = function(data) {
 
     this.i_max = +((360/this.stepSize)*this.data.stopValue).toFixed(0);
 
-    this.addEventListeners();
-
-// ------------------
-
     // reset some things
     this.data.circle.style.transition = "";
     this.data.circle.setAttribute('fill', 'none');
@@ -114,23 +110,6 @@ ProgressCircle.prototype.init = function(data) {
     this.data.circle.getBoundingClientRect();
 
     this.previous_offset = this.pathLength;
-};
-
-/**
- * Adds the necessary EventListeners
- */
-ProgressCircle.prototype.addEventListeners = function() {
-    var self = this;
-    this.data.circle.addEventListener("webkitTransitionEnd", function(){ self.onTransitionEnd(); });
-    this.data.circle.addEventListener("transitionEnd", this.onTransitionEnd);
-};
-
-/**
- * Removes the necessary EventListeners
- */
-ProgressCircle.prototype.removeEventHandler = function() {
-    this.data.circle.removeEventListener("webkitTransitionEnd");
-    this.data.circle.removeEventListener("transitionEnd");
 };
 
 /**
@@ -411,18 +390,6 @@ ProgressCircle.prototype.calculatePath = function(stopValue) {
 
     if(this.data.stopValue === 1) d += ' Z';
     return d;
-};
-
-/**
- * This function is called upon the end of the transition animation when using 'start_alt()'.
- * It allows us to gain the correct entry point for handling the fill and other cleanup.
- */
-ProgressCircle.prototype.onTransitionEnd = function() {
-    // set the fill
-    this.data.circle.setAttribute('fill', this.data.fill);
-
-    // call the user call back if available
-    if(this.data.callback) this.data.callback();
 };
 
 /** ----------------
