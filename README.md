@@ -19,7 +19,8 @@ Build a home for a ```<path>``` element in your own styling.
 ```
 <div style="width:450px; height:450px;">
 	<svg	id="progress-canvas" xmlns="http://www.w3.org/2000/svg"
-			xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+			xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+			width="100%" height="100%">
 	    <path id="progress" d="M0,0" fill="none"></path>
 	</svg>
 	<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-family:sans-serif"></div>
