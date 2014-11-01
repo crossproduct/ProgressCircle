@@ -1,0 +1,28 @@
+{
+  "name": "progress-circle-element",
+  "version": "0.0.0",
+  "authors": [
+    "Anonymous <anonymous@example.com>"
+  ],
+  "description": "Element providing solution to no problem in particular.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "progress-circle",
+    "circle"
+  ],
+  "main": "progress-circle-element.html",
+  "license": "MIT",
+  "homepage": "https://github.com/<USERNAME>/progress-circle-element/",
+  "ignore": [
+    "/.*",
+    "/tests/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.4.2"
+  },
+  "devDependencies": {
+    "web-component-tester": "Polymer/web-component-tester#^0.7.3"
+  }
+}

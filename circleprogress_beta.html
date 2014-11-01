@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head><title>Circular Progress</title>
+	<script> 
+
+	    function drawCircle(circle, duration, startAngle, stroke, strokeWidth, fill, useLabel, stopValue, unit) {
+	    	if(!circle) return;//circle = document.getElementById("arc");
+	    	if(!stroke) stroke = '#EFEFEF';
+	    	if(!startAngle) startAngle = 0;
+	    	if(!stopValue) stopValue = 1; 
+	    	if(!strokeWidth) strokeWidth = 10;
+	    	if(!useLabel) useLabel = false;
+	    	if(!unit) unit = "";
+	    	
+	    	// init the d and fill attr
+	    	circle.setAttribute('d','M0,0');
+	    	circle.setAttribute('fill', 'none');
+
+	    	var radius = ((circle.parentNode.offsetWidth <= circle.parentNode.offsetHeight ? circle.parentNode.offsetWidth : circle.parentNode.offsetHeight)/2) - (strokeWidth/2);
+
+	    	// init the label
+	    	circle.parentElement.parentElement.children[circle.parentElement.parentElement.childElementCount-1].innerHTML = "";
+	    	circle.parentElement.parentElement.children[circle.parentElement.parentElement.childElementCount-1].style.width = ((radius+strokeWidth/2) * 2)+'px';
+	    	circle.parentElement.parentElement.children[circle.parentElement.parentElement.childElementCount-1].style.height = ((radius+strokeWidth/2) * 2)+'px';
+            circle.parentElement.parentElement.children[circle.parentElement.parentElement.childElementCount-1].style.lineHeight = ((radius+strokeWidth/2) * 2)+'px';
+
+	    	// no fill if we aren't drawing a full circle
+	    	if(stopValue != 1) fill = "none";
+
+	    	startAngle %= 360; // normalize input
+	    	stopValue = +stopValue.toFixed(2);
+
+	        var i = 0;
+	        var framerate = 16;
+	        var angle = 0 + startAngle;
+	        var finalAngle = 360 + startAngle; 
+	        var stepSize = 0.5;
+	        var velocity = 10;
+	        var stopAngle = startAngle + (stopValue * 360);
+
+	        // set styles
+	        circle.setAttribute('stroke', stroke);
+	        circle.setAttribute('stroke-width', strokeWidth);
+	        window.clearInterval(window.timer); 
+	        window.timer = window.setInterval( function() {
+	        	for(var n=0; n < velocity; n++) {
+		            angle %= 360;
+		            var radians= (angle/180) * Math.PI;
+		            var x = (radius+parseInt(strokeWidth)/2) + Math.cos(radians) * radius;
+		            var y = (radius+parseInt(strokeWidth)/2) + Math.sin(radians) * radius;
+		            var e = circle.getAttribute("d");
+
+		            if(i == 0) 
+		                var d = e+ " M "+x + " " + y;
+		            else 
+		                var d = e+ " L "+x + " " + y;
+		            
+		            circle.setAttribute("d", d);
+		            angle += stepSize;
+		            //console.log('angle: '+(angle) + 'i: '+ i+ ' stopAngle '+stopAngle);
+
+		            // if at the end, close the circle and stop the timer
+		            if( +((stepSize*100*i)/360).toFixed(2) >= stopValue*100 ) {
+		            	window.clearInterval(window.timer); 
+		            	//angle +=stepSize; 
+			            angle %= 360;
+			            radians= (angle/180) * Math.PI;
+			            x = (radius+parseInt(strokeWidth)/2) + Math.cos(radians) * radius;
+			            y = (radius+parseInt(strokeWidth)/2) + Math.sin(radians) * radius;
+			            e = circle.getAttribute("d");
+			            d = e+ " L "+x + " " + y;
+			            circle.setAttribute("d", d);
+
+			            angle +=stepSize; 
+			            angle %= 360;
+			            radians= (angle/180) * Math.PI;
+			            x = (radius+parseInt(strokeWidth)/2) + Math.cos(radians) * radius;
+			            y = (radius+parseInt(strokeWidth)/2) + Math.sin(radians) * radius;
+			            e = circle.getAttribute("d");
+			            d = e+ " L "+x + " " + y;
+			            circle.setAttribute("d", d);
+
+			            // set the fill
+		        		circle.setAttribute('fill', fill);
+
+		        		// update the label
+			            if(useLabel == true) {
+				            circle.parentElement.parentElement.children[circle.parentElement.parentElement.childElementCount-1].innerHTML = +((stepSize*100*i)/360).toFixed(0)+unit;
+		    				circle.parentElement.parentElement.children[circle.parentElement.parentElement.childElementCount-1].style.width = ((radius+strokeWidth/2) * 2)+'px';
+		    				circle.parentElement.parentElement.children[circle.parentElement.parentElement.childElementCount-1].style.height = ((radius+strokeWidth/2) * 2)+'px';
+				        }
+				        break;
+		            }
+
+		            // update the label
+		            if(useLabel == true) {
+			            circle.parentElement.parentElement.children[circle.parentElement.parentElement.childElementCount-1].innerHTML = +((stepSize*100*i)/360).toFixed(0)+unit;
+	    				circle.parentElement.parentElement.children[circle.parentElement.parentElement.childElementCount-1].style.width = ((radius+strokeWidth/2) * 2)+'px';
+	    				circle.parentElement.parentElement.children[circle.parentElement.parentElement.childElementCount-1].style.height = ((radius+strokeWidth/2) * 2)+'px';
+			        }
+			        i++;
+		        }
+	        }, framerate);
+	    }
+
+	    window.onclick = function() {
+	    	drawCircle(document.getElementById('arc'), 4000, 90, '#51D1E2', 20, '#FAC152', true);
+	    }
+	    </script> 
+	</head>
+	<body style="background-color:#666666; margin:0">
+
+		<div style="width:100%; height:100%; position:relative; top:0; left:0; -webkit-filter:drop-shadow(0px 8px 10px rgba(0,0,0,0.5))">
+			<svg	id="progress-1" xmlns="http://www.w3.org/2000/svg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"> 
+			  
+			    <path id="arc" d="M0,0" fill="none"></path>
+
+			</svg>
+			<div style="color:#FFFFFF; text-align: center; position:absolute;top:0; font-size:100px; line-height:300px; font-family:sans-serif"></div>
+		</div>
+	</body>
+</html>
